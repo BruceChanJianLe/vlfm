@@ -3,9 +3,10 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=release-24.05";
+    nixpkgs20.url = "github:nixos/nixpkgs/release-20.03";
   };
 
-  outputs = { self, nixpkgs }:
+  outputs = { self, nixpkgs, nixpkgs20 }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
       forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f {
@@ -16,16 +17,26 @@
             cudaSupport = true;
           };
         };
+
+        pkgs20 = import nixpkgs20 { inherit system; };
       });
     in
     {
-      devShells = forAllSystems ({ pkgs }: {
+      devShells = forAllSystems ({ pkgs, pkgs20 }: {
         default = pkgs.mkShell {
           buildInputs = [
             pkgs.micromamba
             # CUDA toolkit
             pkgs.cudaPackages_11.cudatoolkit
             pkgs.cudaPackages_11.cuda_nvcc
+            # cmake
+            pkgs20.cmake
+            # pkgs.gcc11
+            #
+            # pkgs.pkg-config
+            # pkgs.mesa
+            # pkgs.libGL
+            # pkgs.libGLU
           ];
 
           shellHook = ''
@@ -48,6 +59,9 @@
             export EXTRA_CCFLAGS="-I${pkgs.cudaPackages_11.cudatoolkit}/include"
 
             echo "cuda version: $(nvcc --version)"
+
+            # export CMAKE_POLICY_VERSION_MINIMUM=3.5
+            # export CMAKE_ARGS="-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
           '';
         };
       });
