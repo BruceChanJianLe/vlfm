@@ -69,7 +69,7 @@
             export LD=${pkgs.gcc11}/bin/ld
 
             # Start setting up vlfm
-            micromamba create -n vlfm python=3.9 -y
+            micromamba create -n vlfm python=3.9 -y -c conda-forge
             micromamba activate vlfm
             pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 -f https://download.pytorch.org/whl/torch_stable.html
             pip install git+https://github.com/IDEA-Research/GroundingDINO.git@eeba084341aaa454ce13cb32fa7fd9282fc73a67 salesforce-lavis==1.0.2
