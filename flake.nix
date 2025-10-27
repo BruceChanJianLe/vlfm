@@ -25,18 +25,19 @@
       devShells = forAllSystems ({ pkgs, pkgs20 }: {
         default = pkgs.mkShell {
           buildInputs = [
+            pkgs.gcc11
             pkgs.micromamba
             # CUDA toolkit
             pkgs.cudaPackages_11.cudatoolkit
             pkgs.cudaPackages_11.cuda_nvcc
             # cmake
             pkgs20.cmake
-            # pkgs.gcc11
-            #
-            # pkgs.pkg-config
-            # pkgs.mesa
-            # pkgs.libGL
-            # pkgs.libGLU
+
+            pkgs.pkg-config
+            pkgs.mesa
+            pkgs.libGL
+            pkgs.libGLU
+            pkgs.zlib
           ];
 
           shellHook = ''
@@ -60,8 +61,12 @@
 
             echo "cuda version: $(nvcc --version)"
 
-            # export CMAKE_POLICY_VERSION_MINIMUM=3.5
-            # export CMAKE_ARGS="-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+            export CMAKE_POLICY_VERSION_MINIMUM=3.5
+            export CMAKE_ARGS="-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+
+            export CC=${pkgs.gcc11}/bin/gcc
+            export CXX=${pkgs.gcc11}/bin/g++
+            export LD=${pkgs.gcc11}/bin/ld
           '';
         };
       });
